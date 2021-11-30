@@ -85,3 +85,12 @@ const createUsername = function (accounts) {
   });
 };
 createUsername(accounts);
+
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce(
+    (accumulator, movement) => accumulator + movement,
+    0
+  );
+  labelBalance.textContent = `${balance}€`;
+};
+calcDisplayBalance(account1.movements);
