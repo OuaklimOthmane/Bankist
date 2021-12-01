@@ -95,20 +95,20 @@ const calcDisplayBalance = function (movements) {
 };
 calcDisplayBalance(account1.movements);
 
-const calcDisplaySummary = function (movements) {
-  const incomes = movements
+const calcDisplaySummary = function (account) {
+  const incomes = account.movements
     .filter((movement) => movement > 0)
     .reduce((accumulator, movement) => accumulator + movement, 0);
   labelSumIn.textContent = `${incomes}€`;
 
-  const out = movements
+  const out = account.movements
     .filter((movement) => movement < 0)
     .reduce((accumulator, movement) => accumulator + movement, 0);
   labelSumOut.textContent = `${Math.abs(out)}€`;
 
-  const interest = movements
+  const interest = account.movements
     .filter((movement) => movement > 0)
-    .map((deposite) => (deposite * 1.2) / 100)
+    .map((deposite) => (deposite * account.interestRate) / 100)
     .filter((deposite) => deposite >= 1)
     .reduce((accumulator, deposite) => accumulator + deposite, 0);
   labelSumInterest.textContent = `${interest}€`;
