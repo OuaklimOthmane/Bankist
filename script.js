@@ -187,3 +187,21 @@ btnTransfer.addEventListener("click", function (e) {
     updateUI(currentAccount);
   }
 });
+
+//? Implementing Loan Amount :
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((movement) => movement >= amount * 0.1)
+  ) {
+    currentAccount.movements.push(amount);
+
+    // Update UI :
+    updateUI(currentAccount);
+  }
+  // Clear the outputs :
+  inputLoanAmount.value = "";
+});
