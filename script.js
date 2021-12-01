@@ -205,3 +205,28 @@ btnLoan.addEventListener("click", function (e) {
   // Clear the outputs :
   inputLoanAmount.value = "";
 });
+
+//? Implementing LogOut :
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (account) => currentAccount.username === account.username
+    );
+    // Delete account :
+    accounts.splice(index, 1);
+
+    // Hide UI :
+    containerApp.style.opacity = 0;
+
+    // Clear the outputs :
+    inputCloseUsername.value = inputClosePin.value = "";
+
+    // Display the starter message :
+    labelWelcome.textContent = "Log in to get started";
+  }
+});
