@@ -87,11 +87,11 @@ const createUsername = function (accounts) {
 createUsername(accounts);
 
 const calcDisplayBalance = function (account) {
-  const balance = account.movements.reduce(
+  account.balance = account.movements.reduce(
     (accumulator, movement) => accumulator + movement,
     0
   );
-  labelBalance.textContent = `${balance}€`;
+  labelBalance.textContent = `${account.balance}€`;
 };
 calcDisplayBalance(account1);
 
@@ -115,10 +115,22 @@ const calcDisplaySummary = function (account) {
 };
 calcDisplaySummary(account1);
 
+const updateUI = function (account) {
+  // Display movements :
+  displayMovements(currentAccount.movements);
+
+  // Display balance :
+  calcDisplayBalance(currentAccount);
+
+  // Display summary :
+  calcDisplaySummary(currentAccount);
+};
+
 //! Event handlers :
 
 let currentAccount;
 
+//? Implementing LogIn :
 btnLogin.addEventListener("click", function (e) {
   // As we knew the form button with the behavior of reloading the page 'cause it's a submit button and we need to stop that for happening so we give the function the event parameter and we call the method as below wich prevents the form for submitting  :
   e.preventDefault();
@@ -126,7 +138,6 @@ btnLogin.addEventListener("click", function (e) {
   currentAccount = accounts.find(
     (account) => account.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display UI and message
@@ -139,10 +150,40 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
 
-    // Display balance :
-    calcDisplayBalance(currentAccount);
+    // Update UI :
+    updateUI(currentAccount);
 
-    // Display summary :
-    calcDisplaySummary(currentAccount);
+    // Clear the outputs :
+    inputTransferTo.value = inputTransferAmount.value = "";
+  }
+});
+
+//? Implementing Transfer :
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(
+    (account) => account.username === inputTransferTo.value
+  );
+  // console.log(receiverAccount);
+
+  // Clear the outputs :
+  inputTransferTo.value = inputTransferAmount.value = "";
+  // Clear the focus from the amount input :
+  inputTransferAmount.blur();
+
+  if (
+    amount > 0 &&
+    amount <= currentAccount.balance &&
+    receiverAccount &&
+    receiverAccount?.username !== currentAccount.username
+  ) {
+    // Doing the Transfer :
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
+
+    // Update UI :
+    updateUI(currentAccount);
   }
 });
