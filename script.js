@@ -113,4 +113,36 @@ const calcDisplaySummary = function (account) {
     .reduce((accumulator, deposite) => accumulator + deposite, 0);
   labelSumInterest.textContent = `${interest}€`;
 };
-calcDisplaySummary(account1.movements);
+calcDisplaySummary(account1);
+
+//! Event handlers :
+
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  // As we knew the form button with the behavior of reloading the page 'cause it's a submit button and we need to stop that for happening so we give the function the event parameter and we call the method as below wich prevents the form for submitting  :
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    (account) => account.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(" ")[0]
+    }`;
+    containerApp.style.opacity = 100;
+
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+
+    // Display balance :
+    calcDisplayBalance(currentAccount.movements);
+
+    // Display summary :
+    calcDisplaySummary(currentAccount);
+  }
+});
