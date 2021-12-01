@@ -86,14 +86,14 @@ const createUsername = function (accounts) {
 };
 createUsername(accounts);
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce(
+const calcDisplayBalance = function (account) {
+  const balance = account.movements.reduce(
     (accumulator, movement) => accumulator + movement,
     0
   );
   labelBalance.textContent = `${balance}€`;
 };
-calcDisplayBalance(account1.movements);
+calcDisplayBalance(account1);
 
 const calcDisplaySummary = function (account) {
   const incomes = account.movements
@@ -140,7 +140,7 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginPin.blur();
 
     // Display balance :
-    calcDisplayBalance(currentAccount.movements);
+    calcDisplayBalance(currentAccount);
 
     // Display summary :
     calcDisplaySummary(currentAccount);
