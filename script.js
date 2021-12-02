@@ -233,3 +233,13 @@ btnClose.addEventListener("click", function (e) {
     labelWelcome.textContent = "Log in to get started";
   }
 });
+
+//? Implementing Sorting movements :
+let sorted = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  displayMovements(currentAccount.movements, !sorted);
+
+  sorted = !sorted;
+});
