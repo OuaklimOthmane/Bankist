@@ -83,10 +83,12 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 /////////////////////////////////////////////////
 
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (account, sort = false) {
   containerMovements.innerHTML = "";
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort
+    ? account.movements.slice().sort((a, b) => a - b)
+    : account.movements;
 
   movs.forEach(function (movement, index) {
     const type = movement > 0 ? "deposit" : "withdrawal";
@@ -100,7 +102,7 @@ const displayMovements = function (movements, sort = false) {
     containerMovements.insertAdjacentHTML("afterbegin", html);
   });
 };
-displayMovements(account1.movements);
+displayMovements(account1);
 
 const createUsername = function (accounts) {
   accounts.forEach(function (account) {
@@ -144,7 +146,7 @@ calcDisplaySummary(account1);
 
 const updateUI = function (account) {
   // Display movements :
-  displayMovements(currentAccount.movements);
+  displayMovements(currentAccount);
 
   // Display balance :
   calcDisplayBalance(currentAccount);
@@ -263,7 +265,7 @@ let sorted = false;
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
 
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
 
   sorted = !sorted;
 });
