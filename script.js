@@ -39,6 +39,26 @@ const account2 = {
   locale: "en-US",
 };
 
+const account5 = {
+  owner: "Othmane Ouaklim",
+  movements: [3000, 400, -150, -290, -3211, -100, 5500, -30],
+  interestRate: 1.5,
+  pin: 5555,
+  movementsDates: [
+    "2019-11-01T13:15:33.035Z",
+    "2019-11-30T09:48:16.867Z",
+    "2019-12-25T06:04:23.907Z",
+    "2020-04-01T10:17:24.185Z",
+    "2020-05-08T14:11:59.604Z",
+    "2021-12-01T17:01:17.194Z",
+    "2021-12-05T23:36:17.929Z",
+    "2021-12-08T10:51:36.790Z",
+    "2020-07-26T12:01:20.894Z",
+  ],
+  currency: "DHS",
+  locale: "ar-MA",
+};
+
 const account3 = {
   owner: "Steven Thomas Williams",
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
@@ -53,7 +73,7 @@ const account4 = {
   pin: 4444,
 };
 
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2, account3, account4, account5];
 
 //! Elements   ::
 const labelWelcome = document.querySelector(".welcome");
@@ -84,7 +104,7 @@ const inputClosePin = document.querySelector(".form__input--pin");
 /////////////////////////////////////////////////
 //! FUNCTIONS ::
 
-const formatMovementDates = function (date) {
+const formatMovementDates = function (date, locale) {
   const calcDaysPassed = (date1, date2) =>
     Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
 
@@ -94,11 +114,7 @@ const formatMovementDates = function (date) {
   if (daysPassed === 7) return "1 Week ago ";
   if (daysPassed < 7) return `${daysPassed} days ago`;
 
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const day = `${date.getDate()}`.padStart(2, 0);
-
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 const displayMovements = function (account, sort = false) {
@@ -111,7 +127,7 @@ const displayMovements = function (account, sort = false) {
   movs.forEach(function (movement, index) {
     const type = movement > 0 ? "deposit" : "withdrawal";
     const date = new Date(account.movementsDates[index]);
-    const displayDate = formatMovementDates(date);
+    const displayDate = formatMovementDates(date, account.locale);
 
     const html = `<div class="movements__row">
               <div class="movements__type movements__type--${type}">${
@@ -191,26 +207,46 @@ btnLogin.addEventListener("click", function (e) {
   );
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
-    // Display UI and message
+    //* Display UI and message
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(" ")[0]
     }`;
     containerApp.style.opacity = 100;
 
-    // Creating current dates and time :
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const minute = `${now.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+    //* Creating current dates and time :
+    // const now = new Date();
+    // const year = now.getFullYear();
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const day = `${now.getDate()}`.padStart(2, 0);
+    // const hour = `${now.getHours()}`.padStart(2, 0);
+    // const minute = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
 
-    // Clear input fields :
+    //* Formating dates automatically using internationalization :
+    const now = new Date();
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      weekday: "long",
+    };
+
+    //* getting locale from user's browser :
+    // const locale = navigator.language;
+    // console.log(locale); // fr-FR
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
+
+    //* Clear input fields :
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
 
-    // Update UI :
+    //* Update UI :
     updateUI(currentAccount);
 
     // Clear the outputs :
@@ -228,10 +264,10 @@ btnTransfer.addEventListener("click", function (e) {
   );
   // console.log(receiverAccount);
 
-  // Clear the outputs :
+  //* Clear the outputs :
   inputTransferTo.value = inputTransferAmount.value = "";
 
-  // Clear the focus from the amount input :
+  //* Clear the focus from the amount input :
   inputTransferAmount.blur();
 
   if (
@@ -240,15 +276,15 @@ btnTransfer.addEventListener("click", function (e) {
     receiverAccount &&
     receiverAccount?.username !== currentAccount.username
   ) {
-    // Doing the Transfer :
+    //* Doing the Transfer :
     currentAccount.movements.push(-amount);
     receiverAccount.movements.push(amount);
 
-    // Add transfer date :
+    //* Add transfer date :
     currentAccount.movementsDates.push(new Date().toISOString());
     receiverAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI :
+    //* Update UI :
     updateUI(currentAccount);
   }
 });
@@ -262,16 +298,16 @@ btnLoan.addEventListener("click", function (e) {
     amount > 0 &&
     currentAccount.movements.some((movement) => movement >= amount * 0.1)
   ) {
-    // Add movement :
+    //* Add movement :
     currentAccount.movements.push(amount);
 
-    // Add loan date :
+    //* Add loan date :
     currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI :
+    //* Update UI :
     updateUI(currentAccount);
   }
-  // Clear the outputs :
+  //* Clear the outputs :
   inputLoanAmount.value = "";
 });
 
@@ -286,16 +322,16 @@ btnClose.addEventListener("click", function (e) {
     const index = accounts.findIndex(
       (account) => currentAccount.username === account.username
     );
-    // Delete account :
+    //* Delete account :
     accounts.splice(index, 1);
 
-    // Hide UI :
+    //* Hide UI :
     containerApp.style.opacity = 0;
 
-    // Clear the outputs :
+    //* Clear the outputs :
     inputCloseUsername.value = inputClosePin.value = "";
 
-    // Display the starter message :
+    //* Display the starter message :
     labelWelcome.textContent = "Log in to get started";
   }
 });
